@@ -61,26 +61,19 @@ public class MyAckReceiver implements ChannelAwareMessageListener {
                 System.out.println("执行fanout.A中的消息的业务处理流程......");
 
             }
-
             if("testProduct".equals(message.getMessageProperties().getConsumerQueue())){
                 String userId  = msgMap.get("userId") ;
-               // System.out.println("用户{}开始抢单"+userId);
-                try {
+                    // System.out.println("用户{}开始抢单"+userId);
                     //处理消息
                     controller.robbingProduct(Integer.parseInt(userId));
-//             确认消息已经消费成功
+                    //确认消息已经消费成功
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-                } catch (Exception e) {
-                    System.out.println(e);
-//             拒绝当前消息，并把消息返回原队列
-                    channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
-                }
             }
-            channel.basicAck(deliveryTag, true);
 			//channel.basicReject(deliveryTag, true);//为true会重新放回队列
         } catch (Exception e) {
-            channel.basicReject(deliveryTag, false);
             e.printStackTrace();
+//             拒绝当前消息，并把消息返回原队列
+            channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
         }
     }
 
