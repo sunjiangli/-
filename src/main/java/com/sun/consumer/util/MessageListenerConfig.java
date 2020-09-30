@@ -27,9 +27,9 @@ public class MessageListenerConfig {
         //container.setQueueNames("TestDirectQueue");
         //如果同时设置多个如下： 前提是队列都是必须已经创建存在的
         //  container.setQueueNames("TestDirectQueue","TestDirectQueue2","TestDirectQueue3");
-
         //container.setQueueNames("fanout.A");
-        container.setQueueNames("testProduct");
+        container.setQueueNames("testProduct","logQueue");
+       // container.setQueueNames("logQueue");
         //另一种设置队列的方法,如果使用这种情况,那么要设置多个,就使用addQueues
         //container.setQueues(new Queue("TestDirectQueue",true));
         //container.addQueues(new Queue("TestDirectQueue2",true));

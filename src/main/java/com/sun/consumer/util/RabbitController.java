@@ -1,7 +1,9 @@
 package com.sun.consumer.util;
 
+import com.sun.consumer.dao.TLogUserDao;
 import com.sun.consumer.dao.TProductDao;
 import com.sun.consumer.dao.TProductRecordDao;
+import com.sun.consumer.entity.TLogUser;
 import com.sun.consumer.entity.TProduct;
 import com.sun.consumer.entity.TProductRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,9 @@ public class RabbitController {
 
     @Autowired
     TProductRecordDao tProductRecordDao ;
+
+    @Autowired
+    TLogUserDao tLogUserDao ;
 
     /**
      *   springboot 普通类无法调用dao
@@ -34,6 +39,7 @@ public class RabbitController {
         rabbitController = this;
         rabbitController.tProductDao = this.tProductDao;
         rabbitController.tProductRecordDao = this.tProductRecordDao;
+        rabbitController.tLogUserDao = this.tLogUserDao;
     }
 
 
@@ -61,4 +67,11 @@ public class RabbitController {
         }
 
     }
+
+    //
+
+    public  void insertLog(TLogUser tLogUser){
+        rabbitController.tLogUserDao.insert(tLogUser);
+    }
+
 }

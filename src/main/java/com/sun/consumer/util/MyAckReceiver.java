@@ -2,10 +2,12 @@ package com.sun.consumer.util;
 
 import com.rabbitmq.client.Channel;
 
+import com.sun.consumer.entity.TLogUser;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,6 +71,15 @@ public class MyAckReceiver implements ChannelAwareMessageListener {
                     //确认消息已经消费成功
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             }
+            if("logQueue".equals(message.getMessageProperties().getConsumerQueue())){
+                //System.out.println("这个是用来记录日志的："+msgMap.get("log"));
+                TLogUser tLogUser = new TLogUser() ;
+                tLogUser.setUserid(Integer.parseInt(msgMap.get("userId")));
+                tLogUser.setLog(msgMap.get("log"));
+                tLogUser.setCreatetime(new Date());
+                controller.insertLog(tLogUser) ;
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+            }
 			//channel.basicReject(deliveryTag, true);//为true会重新放回队列
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,7 +91,7 @@ public class MyAckReceiver implements ChannelAwareMessageListener {
     //{key=value,key=value,key=value} 格式转换成map
     private Map<String, String> mapStringToMap(String str, int entryNum) {
         str = str.substring(1, str.length() - 1);
-        String[] strs = str.split(",", entryNum);
+        String[] strs = str.split(",");
         Map<String, String> map = new HashMap<String, String>();
         for (String string : strs) {
             String key = string.split("=")[0].trim();
