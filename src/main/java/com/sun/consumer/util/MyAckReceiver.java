@@ -1,5 +1,6 @@
 package com.sun.consumer.util;
 
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 
 import com.sun.consumer.dao.OrderInfoDao;
@@ -7,15 +8,17 @@ import com.sun.consumer.entity.TLogUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+
 
 @Component
 public class MyAckReceiver implements ChannelAwareMessageListener {
@@ -125,7 +128,17 @@ public class MyAckReceiver implements ChannelAwareMessageListener {
                 }
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             }
-			//channel.basicReject(deliveryTag, true);//为true会重新放回队列
+
+            if("queue-rpc".equals(message.getMessageProperties().getConsumerQueue())){
+                String json = "1212";
+                MessageProperties messageProperties = message.getMessageProperties();
+                AMQP.BasicProperties props = new AMQP.BasicProperties
+                        .Builder()
+                        .correlationId(messageProperties.getCorrelationId()) //重要
+                        .build();
+                String replyTo =messageProperties.getReplyTo();
+                channel.basicPublish("", replyTo, props, json.getBytes(Charset.defaultCharset()));
+            }
         } catch (Exception e) {
 //          拒绝当前消息，并把消息返回原队列   最
             channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);

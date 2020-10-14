@@ -127,7 +127,7 @@ public class TProductController {
         };
         //模拟创建五条订单消息
         OrderInfo orderInfo = new OrderInfo() ;
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 5; i++) {
             String orderId = String.valueOf(i);
             //订单初始化状态都为未支付
             orderInfo.setPkid(UUID.randomUUID().toString());
