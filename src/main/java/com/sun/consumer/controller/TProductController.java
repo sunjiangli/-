@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 
@@ -137,5 +138,17 @@ public class TProductController {
             rabbitTemplate.convertAndSend("test_dlx_exchange_name", "order.add", orderId, messagePostProcessor, new CorrelationData(UUID.randomUUID().toString()));
         }
     }
+
+    @GetMapping("/testGet")
+    public String testGet(){
+        OrderInfo orderInfo = new OrderInfo() ;
+        orderInfo.setPkid(UUID.randomUUID().toString());
+        orderInfo.setOrderId(String.valueOf(1));
+        orderInfo.setOrderStatus("0");
+       // orderInfoService.insert(orderInfo);
+        Map<String  , Object> map = new ConcurrentHashMap<String  , Object>() ;
+        return  "Hello world" ;
+    }
+
 
 }
